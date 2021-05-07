@@ -1,0 +1,11 @@
+Dear ${PET_NAME},
+
+Please tell ${CLIENT_NAME} that you're due for the treatments shown below:
+
+${TREATMENTS}
+
+Call ${PHONE_NUMBER} to set up an appointment as soon as possible.
+
+Hope to see you soon,
+${HOSPITAL}
+
