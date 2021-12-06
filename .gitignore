@@ -5,3 +5,4 @@ build
 *.xls
 *.xlsx
 *.spec
+node_modules/

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+<!-- Meta data -->
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="default.css">
+    <link rel="stylesheet" href="stage_1.css">
+    <link rel="stylesheet" href="stage_2.css">
+</head>
+
+<!-- Content -->
+<body>
+
+
+<div id="sheet-selector" >
+        <a id="sheet-selector-add">Add a Spreadsheet</a>
+        <div id="sheet-selector-container"></div>
+        <a id="sheet-selector-complete" style="float: right;">COMPLETE</a>
+</div>
+
+
+<div id="stage-1" hidden>
+    <div id="file-drop-zone" onclick="console.log('hello');document.getElementById('file-input').click();">
+    <h1> Upload your spreadsheet<h1>
+    </div>
+</div>
+
+
+<div id="stage-2">
+    <div id="active-data"></div>
+    <div id="controls">
+        <div id="controls-inputs">
+
+            <h1>Data Selectors</h1>
+            
+            <label for="controls-inputs-header">Header Location: </label>
+            <input type="number" id="controls-inputs-header" name="controls-inputs-header" min="1"><br>
+
+            <label for="controls-inputs-right">Right column end point: </label>
+            <input type="number" id="controls-inputs-right" name="controls-inputs-right" min="1"><br>
+
+            <label for="controls-inputs-left">Left column end point:</label>
+            <input type="number" id="controls-inputs-left" name="controls-inputs-left" min="1"><br>
+
+            <label for="controls-inputs-bot">Bottom end point:</label>
+            <input type="number" id="controls-inputs-bot" name="controls-inputs-bot" min="1"><br>
+
+            <label for="controls-inputs-uidcol">Unique ID column: </label>
+            <input type="number" id="controls-inputs-uidcol" name="controls-inputs-uidcol" min="1"><br>
+
+        </div>
+        <div id="controls-toggles">
+            <h1>Data Toggles</h1>
+            <label for="controls-toggles-preview">Hide preview</label>
+            <input type="checkbox" id="controls-toggles-preview" name="controls-toggles-preview"><br>
+
+            <label for="controls-toggles-hideunselected">Hide unselected</label>
+            <input type="checkbox" id="controls-toggles-hideunselected" name="controls-toggles-hideunselected"><br>
+
+            <label>Merge direction</label>
+            <label for="controls-toggles-mergeup">Up</label><tab>
+            <input type="radio" id="controls-toggles-mergeup" name="controls-toggles-mergedirection" value="up">
+            <label for="controls-toggles-mergedown">Down</label>
+            <input type="radio" id="controls-toggles-mergedown" name="controls-toggles-mergedirection" value="down" checked>
+        </div>
+    </div>
+    <div id="preview"></div>
+</div>
+
+<input id="file-input" type="file" name="name" hidden/>
+
+<script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.min.js"></script>
+
+<!-- Firebase SDK -->
+<script src="/__/firebase/8.6.2/firebase-app.js"></script>
+<script src="/__/firebase/8.6.2/firebase-analytics.js"></script>
+<script src="/__/firebase/8.6.2/firebase-auth.js"></script>
+<script src="/__/firebase/8.6.2/firebase-firestore.js"></script>
+<script src="/__/firebase/8.6.2/firebase-functions.js"></script>
+<script src="/__/firebase/8.6.2/firebase-storage.js"></script>
+<script src="/__/firebase/init.js?useEmulator=true"></script>
+
+<!-- Script Files -->
+<script lang="javascript" src="index.js"></script>
+</body>
+</html>
+
