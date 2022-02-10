@@ -1,43 +1,60 @@
-import { fork } from "child_process";
+import {useSheet} from './providers/SheetProvider';
+import {useState} from 'react';
+import Pagination from '@mui/material/Pagination';
+import styled from 'styled-components';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
-type SheetOutputPreviewProps = {
-    originalArray: Array<Array<any>>,
-    top: number,
-    right: number
-    bottom: number,
-    left: number,
-    uniqueIdCol: number,
-    mergeDirection: string,
-}
+const VerticalFlexWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+  height: 100%;
+  width: fit-content;
+  overflow: auto;
+  flex-direction: column;
+  white-space: nowrap;
+`;
 
-export default function SheetOutputPreview({originalArray, top, right, bottom, left, uniqueIdCol, mergeDirection}: SheetOutputPreviewProps) {
+const CenteredH1 = styled.h1`
+  text-align: center;
+`;
 
-    var header = originalArray[0];
-    var direction = mergeDirection == "Up" ? -1 : 1;
-    var new_array = [];
-    var temp_array = [];
+const paramDisplay = styled.div`
+  flex: 50%;
+`;
 
-    var _mod_top = top < 1 ? 1: top;
-    var _mod_left = left < 1 ? 1: left;
+export default function SheetOutputPreview() {
+  const {localParsedData} = useSheet();
+  const [page, setPage] = useState(1);
+  const objects = Object.keys(localParsedData);
+  const currentObject = localParsedData[objects[page - 1]];
 
+  const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
-    for (var i = _mod_top-1; i < bottom-1; i++) {
-        temp_array = originalArray[i];
-        for (var j = _mod_left-1; j < right-1; j++) {
-            if (originalArray[i][uniqueIdCol-1] == null) {
-                break;
-            }
-            temp_array[j] = [originalArray[i+direction][j], originalArray[i][j]];
-        }
-        new_array.push(temp_array.slice(left-1, right-1));
-    }
+  console.log(localParsedData);
+  console.log(page);
+  console.log(localParsedData[page - 1]);
 
-    console.log(new_array)
-
-
-   return (
-         <>
-            lkajsdflkjdsal
-         </>
-    )
+  return (
+    <VerticalFlexWrapper>
+      <CenteredH1>{objects[page - 1]}</CenteredH1>
+      <Grid container rowSpacing={1} columnSpacing={{xs: 1, sm: 2, md: 3}}>
+        {Object.keys(currentObject).map(key => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={key}>
+            <Typography variant="h6">{key} : </Typography>
+            <Typography variant="body1">{currentObject[key]}</Typography>
+          </Grid>
+        ))}
+      </Grid>
+      <Pagination
+        count={objects.length}
+        page={page}
+        onChange={handleChange}
+        color="primary"
+      />
+    </VerticalFlexWrapper>
+  );
 }

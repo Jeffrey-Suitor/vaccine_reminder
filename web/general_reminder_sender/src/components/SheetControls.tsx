@@ -1,137 +1,153 @@
-import styled from "styled-components";
-import TextField from "@material-ui/core/TextField";
-import FormLabel from "@material-ui/core/FormLabel";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
-import Switch from "@material-ui/core/Switch";
-
-type SheetControlState = {
-    top: number,
-    right: number,
-    bottom: number,
-    left: number,
-    uniqueIdCol: number,
-    maxRight: number,
-    maxBottom: number,
-    sheetId: string
-}
-
-type SheetTogglesState = {
-    mergeDirection: string,
-    showPreview: boolean,
-    showColours: boolean,
-    hideUnselected: boolean
-}
-
-type SheetControlProps = {
-    currentSheetControls: SheetControlState,
-    setCurrentSheetControls:  React.Dispatch<React.SetStateAction<any>>
-    currentSheetToggles: SheetTogglesState
-    setCurrentSheetToggles: React.Dispatch<React.SetStateAction<any>>
-}
+import styled from 'styled-components';
+import MuiInput from '@mui/material/Input';
+import FormLabel from '@mui/material/FormLabel';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import Switch from '@mui/material/Switch';
+import {useSheet, useUpdateSheet} from './providers/SheetProvider';
+import {
+  useSheetToggles,
+  useUpdateSheetToggles,
+} from './providers/SheetTogglesProvider';
 
 const FormWrapper = styled.div`
-    padding: 1em;
-    display: flex;
-    flex-grow: 1;
-    flex-direction: column;
-    & > div {
-        margin: 5px;
-    }
+  padding: 1em;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  & > div {
+    margin: 5px;
+  }
 `;
 
-const TextFieldStyled = styled(TextField)<{colour: string}>`
-    border-color: ${props => (props.colour)};
-`
+export default function SheetControls() {
+  const {updateSheetVal} = useUpdateSheet();
+  const {top, right, bottom, left, uniqueIdCol, maxBottom, maxRight} =
+    useSheet();
 
-export default function SheetControls({currentSheetControls, setCurrentSheetControls, currentSheetToggles, setCurrentSheetToggles}: SheetControlProps) {
+  const {mergeDirection, showPreview, showColours, showUnselected} =
+    useSheetToggles();
 
-   
-    var {top, right, bottom, left, maxRight, maxBottom, uniqueIdCol} = currentSheetControls;
-    var {mergeDirection, showPreview, showColours, hideUnselected} = currentSheetToggles;
+  const {setMergeDirection, setShowPreview, setShowColours, setShowUnselected} =
+    useUpdateSheetToggles();
 
-    const textInputChanged = (e:any, ) => {
+  function textInputValidate(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    return parseInt(e.target.value.replace(/[^0-9]/g, ''));
+  }
 
-        const EMPTY_TEXT_FIELD_ERROR = -1;
-        var prop = e.target.name;
+  return (
+    <form noValidate autoComplete="off">
+      <FormWrapper>
+        <MuiInput
+          inputProps={{
+            step: 1,
+            min: 1,
+            max: maxBottom || 9999,
+            colour: 'purple',
+            label: 'Header',
+            value: top || '',
+            type: 'number',
+          }}
+          onChange={e => {
+            updateSheetVal(textInputValidate(e), 'top');
+          }}
+        />
 
-        var inputValue = e.target.value;
-        if (e.nativeEvent.data) {
-            // Not a nubmer entry
-            if (e.nativeEvent.data.replace(/\D/g,'') === '') { 
-                inputValue = currentSheetControls[prop as keyof SheetControlState];
-            }
-        } else {
-            inputValue = e.target.value.replace(/\D/g,'')
-            if (!inputValue) { inputValue = EMPTY_TEXT_FIELD_ERROR; }
-        }
+        <MuiInput
+          inputProps={{
+            step: 1,
+            min: 1,
+            max: maxRight || 9999,
+            type: 'number',
+            border_color: '#9932CC',
+            label: 'Left',
+            value: left || '',
+          }}
+          onChange={e => {
+            updateSheetVal(textInputValidate(e), 'left');
+          }}
+        />
 
-        var value = parseInt(inputValue);
+        <MuiInput
+          inputProps={{
+            step: 1,
+            min: top || 0,
+            max: maxBottom || 9999,
+            type: 'number',
+            colour: 'maroon',
+            label: 'Bottom',
+            value: bottom || '',
+          }}
+          onChange={e => {
+            updateSheetVal(textInputValidate(e), 'bottom');
+          }}
+        />
 
-        if (value === EMPTY_TEXT_FIELD_ERROR) {
-            e.target.value = "";
-            setCurrentSheetControls({ ...currentSheetControls, [prop]: value});
-        } else {
-            switch(prop) {
-                case "top":
-                    if (value > bottom) value = bottom
-                    else if (value < 1) value = 1
-                    else if (value > maxBottom) value = maxBottom
-                    break;
-                case "left":
-                    if (value > right) value = right
-                    else if (value < 1) value = 1;
-                    else if (value > maxRight) value = maxRight;
-                    break;
-                case "right":
-                    if (value < left) value = left;
-                    else if (value > maxRight) value = maxRight;
-                    break;
-                case "bottom":
-                    if (value < bottom) value = top;
-                    else if (value > maxBottom) value = maxBottom;
-                    break;
-                case "uniqueIdCol":
-                    if (value > right) value = right;
-                    else if (value < left) value = left;
-                    break;
-            }
-            setCurrentSheetControls({ ...currentSheetControls, [prop]: value});
-            e.target.value = value.toString();
-        }
+        <MuiInput
+          inputProps={{
+            step: 1,
+            min: left || 0,
+            max: maxRight || 9999,
+            type: 'number',
+            colour: 'teal',
+            label: 'Right',
+            value: right || '',
+          }}
+          onChange={e => {
+            updateSheetVal(textInputValidate(e), 'right');
+          }}
+        />
 
-    }
-
-    const radioInputChange = (e:any) => {
-        var prop = e.target.name;
-        var value = e.target.value;
-        setCurrentSheetToggles({...currentSheetToggles, [prop]: value});
-    };
-
-    const sliderInputChange = (e:any) => {
-        var prop = e.target.name;
-        var checked = e.target.checked;
-        setCurrentSheetToggles({...currentSheetToggles, [prop]: checked});
-    };
-    
-    return (
-        <form noValidate autoComplete="off">
-            <FormWrapper>
-                <TextFieldStyled colour="purple"  error={top === -1 ? true : false} name="top" label="Header" defaultValue={top} onChange={textInputChanged} />
-                <TextFieldStyled colour="#9932CC" error={left === -1 ? true : false} name="left" label="Left"   defaultValue={left} onChange={textInputChanged} />
-                <TextFieldStyled colour="teal" error={right === -1 ? true : false} name="right" label="Right"  defaultValue={right} onChange={textInputChanged} />
-                <TextFieldStyled colour="maroon" error={bottom === -1 ? true : false} name="bottom" label="Bottom" defaultValue={bottom} onChange={textInputChanged} />
-                <TextFieldStyled colour="red" error={uniqueIdCol === -1 ? true : false} name="uniqueIdCol" label="Unique ID Col" defaultValue={uniqueIdCol} onChange={textInputChanged} />
-                <FormLabel component="legend">Merge Direction</FormLabel>
-                <RadioGroup name="mergeDirection" value={mergeDirection} onChange={radioInputChange} >
-                    <FormControlLabel value="Up" control={<Radio />} label="Up" />
-                    <FormControlLabel value="Down" control={<Radio />} label="Down" />
-                </RadioGroup>
-            <FormControlLabel name="showPreview" control={<Switch checked={showPreview} />} label="Show Preview" onChange={sliderInputChange}/>
-            <FormControlLabel name="showColours" control={<Switch checked={showColours} />} label="Show Colours" onChange={sliderInputChange}/>
-            <FormControlLabel name="hideUnselected" control={<Switch checked={hideUnselected} />} label="Hide Unselected" onChange={sliderInputChange}/>
-            </FormWrapper>
-        </form>
-    )
+        <MuiInput
+          inputProps={{
+            step: 1,
+            min: left || 0,
+            max: right || 9999,
+            type: 'number',
+            colour: 'red',
+            label: 'Unique ID Column',
+            value: uniqueIdCol || '',
+          }}
+          onChange={e => {
+            updateSheetVal(textInputValidate(e), 'uniqueIdCol');
+          }}
+        />
+        <FormLabel component="legend">Merge Direction</FormLabel>
+        <RadioGroup
+          name="mergeDirection"
+          value={mergeDirection}
+          onChange={(_e, direction: 'Up' | 'Down') => {
+            setMergeDirection(direction);
+          }}
+        >
+          <FormControlLabel value="Up" control={<Radio />} label="Up" />
+          <FormControlLabel value="Down" control={<Radio />} label="Down" />
+        </RadioGroup>
+        <FormControlLabel
+          control={<Switch checked={showPreview} />}
+          label="Show Preview"
+          onChange={(_e, checked) => {
+            setShowPreview(checked);
+          }}
+        />
+        <FormControlLabel
+          control={<Switch checked={showColours} />}
+          label="Show Colours"
+          onChange={(_e, checked) => {
+            setShowColours(checked);
+          }}
+        />
+        <FormControlLabel
+          control={<Switch checked={showUnselected} />}
+          label="Hide Unselected"
+          onChange={(_e, checked) => {
+            setShowUnselected(checked);
+          }}
+        />
+      </FormWrapper>
+    </form>
+  );
 }

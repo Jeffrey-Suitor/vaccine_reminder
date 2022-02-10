@@ -1,29 +1,24 @@
-import React from "react";
-import { StepLabel, Stepper, Step} from "@material-ui/core";
-import styled from "styled-components";
+import React from 'react';
+import {StepLabel, Stepper, Step} from '@mui/material';
+import {useStage} from './providers/StageProvider';
 
-type StepProps = {
-    activeStep: number
-  }
+export default function StepIndicator() {
+  const stage = useStage();
 
-export default function StepIndicator({activeStep}: StepProps) {
-    const steps = [
-        "Upload your spreadsheet",
-        "Parse your data",
-        "Merge your data",
-        "Send your reminders"
-    ];
+  const steps = [
+    'Upload your spreadsheet',
+    'Parse your data',
+    'Merge your data',
+    'Send your reminders',
+  ];
 
-    return (
-        <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-    )
-
+  return (
+    <Stepper activeStep={stage} alternativeLabel>
+      {steps.map(label => (
+        <Step key={label}>
+          <StepLabel>{label}</StepLabel>
+        </Step>
+      ))}
+    </Stepper>
+  );
 }
-
-

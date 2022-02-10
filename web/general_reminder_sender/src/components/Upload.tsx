@@ -1,35 +1,34 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 import {DropzoneArea} from 'material-ui-dropzone';
-import * as FirebaseService from "../services/Firebase";
-
-
-type UploadProps = {
-    nextStage: () => void,
-}
+import * as FirebaseService from '../services/Firebase';
+import {useUpdateStage} from './providers/StageProvider';
 
 const Wrapper = styled.div`
-    width: 50%;
-    height: 50%;
-    margin: auto;
+  width: 50%;
+  height: 50%;
+  margin: auto;
 
-    & .MuiDropzoneArea-root {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+  & .MuiDropzoneArea-root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
-export default function Upload({nextStage}: UploadProps) { 
+export default function Upload() {
+  const {nextStage} = useUpdateStage();
 
+  const uploadSpreadsheet = async (files: File[]) => {
+    await FirebaseService.uploadSpreadsheet(files);
+    nextStage();
+  };
 
-    const uploadSpreadsheet = async (files: Array<any>) => {
-        await FirebaseService.uploadSpreadsheet(files);
-        nextStage();
-    };
-
-    return (
-        <Wrapper>
-            <DropzoneArea onChange={uploadSpreadsheet} showPreviewsInDropzone={false}/>
-        </Wrapper>
-    );
+  return (
+    <Wrapper>
+      <DropzoneArea
+        onChange={uploadSpreadsheet}
+        showPreviewsInDropzone={false}
+      />
+    </Wrapper>
+  );
 }
